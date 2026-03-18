@@ -1,0 +1,14 @@
+{
+    "projectName": "ForTheL",
+    "languages": [
+        {
+            "id": "for-the-l",
+            "grammar": "src/for-the-l.langium",
+            "fileExtensions": [".ftl"],
+            "textMate": {
+                "out": "../extension/syntaxes/for-the-l.tmLanguage.json"
+            }
+        }
+    ],
+    "out": "src/generated"
+}

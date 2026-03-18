@@ -1,0 +1,88 @@
+\documentclass{article}
+\usepackage[english]{babel}
+
+\title{ForTheL Demo (LaTeX Mode)}
+\author{Test File}
+\date{2026}
+
+\newenvironment{forthel}{}{}
+\newenvironment{signature}{\noindent\textbf{Signature.}}{}
+\newenvironment{definition}{\noindent\textbf{Definition.}}{}
+\newenvironment{axiom}{\noindent\textbf{Axiom.}}{}
+\newenvironment{theorem}[1][]{\noindent\textbf{Theorem}\ifthenelse{\equal{#1}{}}{}{~(#1)}\textbf{.}}{}
+\newenvironment{lemma}[1][]{\noindent\textbf{Lemma}\ifthenelse{\equal{#1}{}}{}{~(#1)}\textbf{.}}{}
+
+\begin{document}
+\maketitle
+
+This document demonstrates ForTheL in LaTeX mode.
+
+\begin{forthel}
+  \begin{signature}
+    A group is an object.
+  \end{signature}
+
+  \begin{signature}
+    Let $G$ be a group.
+    An element of $G$ is an object.
+  \end{signature}
+
+  \begin{signature}
+    Let $G$ be a group and $a, b$ be elements of $G$.
+    $a \cdot b$ is an element of $G$.
+  \end{signature}
+
+  \begin{signature}
+    Let $G$ be a group.
+    $e_G$ is an element of $G$.
+  \end{signature}
+
+  \begin{axiom}
+    Let $G$ be a group and $a$ be an element of $G$.
+    Then $e_G \cdot a = a$ and $a \cdot e_G = a$.
+  \end{axiom}
+
+  \begin{signature}
+    Let $G$ be a group and $a$ be an element of $G$.
+    $a^{-1}$ is an element of $G$.
+  \end{signature}
+
+  \begin{axiom}
+    Let $G$ be a group and $a$ be an element of $G$.
+    Then $a \cdot a^{-1} = e_G$ and $a^{-1} \cdot a = e_G$.
+  \end{axiom}
+
+  \begin{axiom}
+    Let $G$ be a group and $a, b, c$ be elements of $G$.
+    Then $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
+  \end{axiom}
+\end{forthel}
+
+With the group axioms established, we can prove basic properties.
+
+\begin{forthel}
+  \begin{lemma}[Uniqueness of Identity]
+    Let $G$ be a group and $a, e$ be elements of $G$.
+    If $a \cdot e = a$ then $e = e_G$.
+  \end{lemma}
+  \begin{proof}
+    Assume $a \cdot e = a$.
+    Then $e = e_G \cdot e = (a^{-1} \cdot a) \cdot e = a^{-1} \cdot (a \cdot e)
+         = a^{-1} \cdot a = e_G$.
+  \end{proof}
+
+  \begin{theorem}[Inverse is Involutive]
+    Let $G$ be a group and $a$ be an element of $G$.
+    Then $(a^{-1})^{-1} = a$.
+  \end{theorem}
+  \begin{proof}
+    $(a^{-1})^{-1}
+      = (a^{-1})^{-1} \cdot e_G
+      = (a^{-1})^{-1} \cdot (a^{-1} \cdot a)
+      = ((a^{-1})^{-1} \cdot a^{-1}) \cdot a
+      = e_G \cdot a
+      = a$.
+  \end{proof}
+\end{forthel}
+
+\end{document}

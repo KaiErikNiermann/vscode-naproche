@@ -1,0 +1,35 @@
+{
+    "name": "for-the-l-workspace",
+    "description": "Base workspace package",
+    "version": "0.0.1",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "clean": "pnpm -r run clean",
+        "watch": "tsc -b tsconfig.build.json --watch",
+        "build": "tsc -b tsconfig.build.json && pnpm -r run build",
+        "build:clean": "pnpm run clean && pnpm run build",
+        "langium:generate": "pnpm --filter for-the-l-language run langium:generate",
+        "langium:watch": "pnpm --filter for-the-l-language run langium:watch",
+        "test": "pnpm --filter for-the-l-language run test",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "package": "pnpm run build && cd packages/extension && vsce package --no-dependencies --allow-missing-repository -o ../../vscode-naproche.vsix",
+        "install-local": "pnpm run package && code --install-extension vscode-naproche.vsix --force && echo 'Installed! Reload VS Code to activate.'"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/node": "~20.17.48",
+        "eslint": "^10.0.3",
+        "eslint-plugin-security": "^4.0.0",
+        "eslint-plugin-sonarjs": "^4.0.2",
+        "eslint-plugin-unicorn": "^63.0.0",
+        "shx": "~0.4.0",
+        "typescript": "~5.8.3",
+        "typescript-eslint": "^8.57.0"
+    },
+    "volta": {
+        "node": "20.19.2",
+        "npm": "10.8.2"
+    }
+}

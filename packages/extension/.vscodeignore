@@ -1,0 +1,8 @@
+**/*
+!out/**
+!syntaxes/**
+!language-configuration.json
+!language-configuration-tex.json
+!package.json
+!README.md
+!LICENSE

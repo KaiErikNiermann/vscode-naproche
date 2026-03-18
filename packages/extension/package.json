@@ -1,0 +1,76 @@
+{
+    "name": "vscode-naproche",
+    "description": "ForTheL language support for Naproche",
+    "version": "0.0.1",
+    "displayName": "vscode-naproche",
+    "type": "module",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "for-the-l",
+                "aliases": [
+                    "ForTheL",
+                    "for-the-l"
+                ],
+                "extensions": [
+                    ".ftl"
+                ],
+                "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "for-the-l-tex",
+                "aliases": [
+                    "ForTheL (LaTeX)",
+                    "for-the-l-tex"
+                ],
+                "extensions": [
+                    ".ftl.tex"
+                ],
+                "configuration": "./language-configuration-tex.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "for-the-l",
+                "scopeName": "source.for-the-l",
+                "path": "syntaxes/for-the-l.tmLanguage.json"
+            },
+            {
+                "language": "for-the-l-tex",
+                "scopeName": "source.for-the-l.tex",
+                "path": "syntaxes/for-the-l-tex.tmLanguage.json"
+            }
+        ]
+    },
+    "activationEvents": [
+        "onLanguage:for-the-l"
+    ],
+    "main": "./out/extension/main.cjs",
+    "scripts": {
+        "clean": "shx rm -fr *.tsbuildinfo out",
+        "vscode:prepublish": "pnpm run build",
+        "build": "tsc -b tsconfig.json && node esbuild.mjs",
+        "build:clean": "pnpm run clean && pnpm run build",
+        "watch": "concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
+    },
+    "dependencies": {
+        "for-the-l-language": "workspace:*",
+        "langium": "~4.0.3",
+        "vscode-languageclient": "~9.0.1",
+        "vscode-languageserver": "~9.0.1"
+    },
+    "devDependencies": {
+        "@types/vscode": "~1.67.0",
+        "concurrently": "~8.2.1",
+        "esbuild": "~0.25.5"
+    },
+    "vsce": {
+        "dependencies": false
+    }
+}

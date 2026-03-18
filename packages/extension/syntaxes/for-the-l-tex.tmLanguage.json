@@ -1,0 +1,349 @@
+{
+    "name": "ForTheL (LaTeX)",
+    "scopeName": "source.for-the-l.tex",
+    "fileTypes": ["ftl.tex"],
+    "patterns": [
+        { "include": "#latex-comment" },
+        { "include": "#forthel-environment" },
+        { "include": "#latex-command" },
+        { "include": "#latex-math-display" },
+        { "include": "#latex-math-inline" },
+        { "include": "#latex-environment" }
+    ],
+    "repository": {
+        "latex-comment": {
+            "name": "comment.line.percentage.for-the-l.tex",
+            "match": "%.*$"
+        },
+
+        "forthel-environment": {
+            "name": "meta.environment.forthel.for-the-l.tex",
+            "begin": "(\\\\begin)(\\{)(forthel)(\\})",
+            "end": "(\\\\end)(\\{)(forthel)(\\})",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.begin.for-the-l.tex" },
+                "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                "3": { "name": "entity.name.type.environment.for-the-l.tex" },
+                "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+            },
+            "endCaptures": {
+                "1": { "name": "keyword.control.end.for-the-l.tex" },
+                "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                "3": { "name": "entity.name.type.environment.for-the-l.tex" },
+                "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+            },
+            "patterns": [
+                { "include": "#forthel-content" }
+            ]
+        },
+
+        "forthel-content": {
+            "patterns": [
+                { "include": "#latex-comment" },
+                { "include": "#forthel-section-environment" },
+                { "include": "#forthel-proof-environment" },
+                { "include": "#forthel-align-environment" },
+                { "include": "#forthel-directive" },
+                { "include": "#forthel-let-binding" },
+                { "include": "#forthel-visibility-toggle" },
+                { "include": "#forthel-proof-step-keywords" },
+                { "include": "#latex-math-display" },
+                { "include": "#latex-math-inline" },
+                { "include": "#forthel-latex-operator" },
+                { "include": "#forthel-naproche-macros" },
+                { "include": "#latex-command" }
+            ]
+        },
+
+        "forthel-section-environment": {
+            "patterns": [
+                {
+                    "comment": "\\begin{theorem*}[Name] etc.",
+                    "match": "(\\\\begin)(\\{)(theorem\\*?|definition\\*?|axiom\\*?|lemma\\*?|proposition\\*?|corollary\\*?|signature\\*?|convention\\*?)(\\})(\\[([^\\]]*?)\\])?",
+                    "captures": {
+                        "1": { "name": "keyword.control.begin.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "keyword.control.section.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" },
+                        "6": { "name": "entity.name.function.theorem.for-the-l.tex" }
+                    }
+                },
+                {
+                    "comment": "\\end{theorem*} etc.",
+                    "match": "(\\\\end)(\\{)(theorem\\*?|definition\\*?|axiom\\*?|lemma\\*?|proposition\\*?|corollary\\*?|signature\\*?|convention\\*?)(\\})",
+                    "captures": {
+                        "1": { "name": "keyword.control.end.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "keyword.control.section.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+                    }
+                }
+            ]
+        },
+
+        "forthel-proof-environment": {
+            "patterns": [
+                {
+                    "comment": "\\begin{proof} with optional method [by contradiction] etc.",
+                    "match": "(\\\\begin)(\\{)(proof)(\\})(\\[([^\\]]*?)\\])?",
+                    "captures": {
+                        "1": { "name": "keyword.control.begin.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "keyword.control.proof.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" },
+                        "6": { "name": "keyword.other.proof-method.for-the-l.tex" }
+                    }
+                },
+                {
+                    "comment": "\\end{proof}",
+                    "match": "(\\\\end)(\\{)(proof)(\\})",
+                    "captures": {
+                        "1": { "name": "keyword.control.end.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "keyword.control.proof.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+                    }
+                },
+                {
+                    "comment": "\\begin{case}/\\end{case}",
+                    "match": "(\\\\(?:begin|end))(\\{)(case)(\\})",
+                    "captures": {
+                        "1": { "name": "keyword.control.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "keyword.control.case.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+                    }
+                }
+            ]
+        },
+
+        "forthel-align-environment": {
+            "comment": "align* environment for equational chains",
+            "name": "meta.environment.align.for-the-l.tex",
+            "begin": "(\\\\begin)(\\{)(align\\*)(\\})",
+            "end": "(\\\\end)(\\{)(align\\*)(\\})",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.begin.for-the-l.tex" },
+                "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                "3": { "name": "keyword.control.align.for-the-l.tex" },
+                "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+            },
+            "endCaptures": {
+                "1": { "name": "keyword.control.end.for-the-l.tex" },
+                "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                "3": { "name": "keyword.control.align.for-the-l.tex" },
+                "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+            },
+            "contentName": "markup.math.align.for-the-l.tex",
+            "patterns": [
+                {
+                    "comment": "Alignment operator",
+                    "match": "&",
+                    "name": "keyword.operator.alignment.for-the-l.tex"
+                },
+                {
+                    "comment": "Line break",
+                    "match": "\\\\\\\\",
+                    "name": "keyword.operator.linebreak.for-the-l.tex"
+                },
+                { "include": "#forthel-latex-operator" },
+                { "include": "#forthel-naproche-macros" },
+                { "include": "#latex-command" }
+            ]
+        },
+
+        "forthel-directive": {
+            "name": "meta.directive.for-the-l.tex",
+            "begin": "\\[",
+            "end": "\\]",
+            "beginCaptures": {
+                "0": { "name": "punctuation.definition.directive.begin.for-the-l.tex" }
+            },
+            "endCaptures": {
+                "0": { "name": "punctuation.definition.directive.end.for-the-l.tex" }
+            },
+            "patterns": [
+                {
+                    "name": "keyword.control.directive.for-the-l.tex",
+                    "match": "\\b(read|synonym|dump|exit|quit)\\b"
+                },
+                {
+                    "match": "(\\\\path)(\\{)([^}]*)(\\})",
+                    "captures": {
+                        "1": { "name": "keyword.control.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "string.unquoted.path.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+                    }
+                },
+                {
+                    "comment": "Synonym slash-separated forms",
+                    "match": "(/[-\\w]+)+",
+                    "name": "string.unquoted.synonym.for-the-l.tex"
+                }
+            ]
+        },
+
+        "forthel-let-binding": {
+            "comment": "Let ... stand for ... / Let ... denote ...",
+            "match": "\\b(Let)\\b(.+?)\\b(stand\\s+for|denote)\\b",
+            "captures": {
+                "1": { "name": "keyword.control.let.for-the-l.tex" },
+                "3": { "name": "keyword.other.binding.for-the-l.tex" }
+            }
+        },
+
+        "forthel-visibility-toggle": {
+            "comment": "\\showforthelfalse / \\showfortheltrue for hiding/showing blocks",
+            "match": "\\\\(showforthelfalse|showfortheltrue)\\b",
+            "name": "keyword.control.visibility.for-the-l.tex"
+        },
+
+        "forthel-proof-step-keywords": {
+            "patterns": [
+                {
+                    "match": "\\b(Assume|Suppose|Presume)\\b",
+                    "name": "keyword.other.assumption.for-the-l.tex"
+                },
+                {
+                    "match": "\\b(Then|Hence|Thus|Therefore|Consequently|Indeed)\\b",
+                    "name": "keyword.other.conclusion.for-the-l.tex"
+                },
+                {
+                    "match": "\\bWe\\s+(have|can\\s+show)\\b",
+                    "name": "keyword.other.assertion.for-the-l.tex"
+                },
+                {
+                    "match": "\\bLet\\s+us\\s+(show|prove|demonstrate)\\b",
+                    "name": "keyword.other.subgoal.for-the-l.tex"
+                },
+                {
+                    "match": "\\b(Take|Choose|Consider|Define)\\b",
+                    "name": "keyword.other.choice.for-the-l.tex"
+                },
+                {
+                    "match": "\\b(Contradiction)\\s*\\.",
+                    "captures": {
+                        "1": { "name": "keyword.control.contradiction.for-the-l.tex" }
+                    }
+                },
+                {
+                    "match": "\\b(the\\s+thesis|the\\s+contrary|Assume\\s+the\\s+contrary)\\b",
+                    "name": "keyword.other.special-phrase.for-the-l.tex"
+                },
+                {
+                    "match": "\\b(Let)\\b(?!\\s+us\\s)(?!.*\\b(?:stand\\s+for|denote)\\b)",
+                    "captures": {
+                        "1": { "name": "keyword.other.let.for-the-l.tex" }
+                    }
+                },
+                {
+                    "match": "\\b(every|each|all|any|some|no|there|exists|exist|such that|if and only if)\\b",
+                    "name": "keyword.other.quantifier.for-the-l.tex"
+                }
+            ]
+        },
+
+        "forthel-latex-operator": {
+            "comment": "LaTeX math commands used as operators in ForTheL",
+            "match": "\\\\(in|notin|subseteq|subset|cup|cap|bigcup|bigcap|neq|prec|iff|implies|vee|wedge|neg|forall|exists|dom|class|text|mod|leq|geq|rightarrow|leftrightarrow|cdot|times)\\b",
+            "name": "keyword.operator.for-the-l.tex"
+        },
+
+        "forthel-naproche-macros": {
+            "patterns": [
+                {
+                    "comment": "\\operatorname{...} for function-call syntax in .ftl.tex",
+                    "match": "(\\\\operatorname)(\\{)([^}]*)(\\})",
+                    "captures": {
+                        "1": { "name": "support.function.latex.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "entity.name.function.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+                    }
+                },
+                {
+                    "comment": "\\class{...} set comprehension",
+                    "match": "(\\\\class)(\\{)",
+                    "captures": {
+                        "1": { "name": "support.function.builtin.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" }
+                    }
+                },
+                {
+                    "comment": "\\dom(f) domain function",
+                    "match": "\\\\dom\\b",
+                    "name": "support.function.builtin.for-the-l.tex"
+                },
+                {
+                    "comment": "\\napqed workaround macro",
+                    "match": "\\\\napqed\\b",
+                    "name": "keyword.control.qed.for-the-l.tex"
+                },
+                {
+                    "comment": "\\label{...}",
+                    "match": "(\\\\label)(\\{)([^}]*)(\\})",
+                    "captures": {
+                        "1": { "name": "support.function.latex.for-the-l.tex" },
+                        "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                        "3": { "name": "entity.name.label.for-the-l.tex" },
+                        "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+                    }
+                }
+            ]
+        },
+
+        "latex-math-display": {
+            "name": "meta.math.display.for-the-l.tex",
+            "begin": "\\\\\\[",
+            "end": "\\\\\\]",
+            "beginCaptures": {
+                "0": { "name": "punctuation.definition.math.begin.for-the-l.tex" }
+            },
+            "endCaptures": {
+                "0": { "name": "punctuation.definition.math.end.for-the-l.tex" }
+            },
+            "contentName": "markup.math.display.for-the-l.tex",
+            "patterns": [
+                { "include": "#forthel-latex-operator" },
+                { "include": "#forthel-naproche-macros" },
+                { "include": "#latex-command" }
+            ]
+        },
+
+        "latex-math-inline": {
+            "name": "meta.math.inline.for-the-l.tex",
+            "begin": "\\$",
+            "end": "\\$",
+            "beginCaptures": {
+                "0": { "name": "punctuation.definition.math.begin.for-the-l.tex" }
+            },
+            "endCaptures": {
+                "0": { "name": "punctuation.definition.math.end.for-the-l.tex" }
+            },
+            "contentName": "markup.math.inline.for-the-l.tex",
+            "patterns": [
+                { "include": "#forthel-latex-operator" },
+                { "include": "#forthel-naproche-macros" },
+                { "include": "#latex-command" }
+            ]
+        },
+
+        "latex-environment": {
+            "comment": "Generic LaTeX environments outside forthel",
+            "match": "(\\\\(?:begin|end))(\\{)([^}]*)(\\})",
+            "captures": {
+                "1": { "name": "keyword.control.for-the-l.tex" },
+                "2": { "name": "punctuation.definition.arguments.begin.for-the-l.tex" },
+                "3": { "name": "variable.parameter.for-the-l.tex" },
+                "4": { "name": "punctuation.definition.arguments.end.for-the-l.tex" }
+            }
+        },
+
+        "latex-command": {
+            "comment": "Generic LaTeX commands",
+            "match": "\\\\[a-zA-Z@]+",
+            "name": "support.function.latex.for-the-l.tex"
+        }
+    }
+}

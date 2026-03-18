@@ -1,0 +1,28 @@
+{
+    "comments": {
+        "lineComment": "#"
+    },
+    "brackets": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"]
+    ],
+    "autoClosingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""]
+    ],
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""]
+    ],
+    "folding": {
+        "markers": {
+            "start": "^\\s*(Proof|Case)\\b",
+            "end": "^\\s*(Qed|End)\\."
+        }
+    }
+}

@@ -1,0 +1,309 @@
+{
+    "name": "ForTheL",
+    "scopeName": "source.for-the-l",
+    "fileTypes": ["ftl"],
+    "patterns": [
+        { "include": "#comment" },
+        { "include": "#directive" },
+        { "include": "#section-header" },
+        { "include": "#proof-block" },
+        { "include": "#let-binding" },
+        { "include": "#labeled-step" },
+        { "include": "#proof-step-keywords" },
+        { "include": "#built-in-functions" },
+        { "include": "#logical-operators" },
+        { "include": "#number" },
+        { "include": "#string" },
+        { "include": "#parenthesized" },
+        { "include": "#braces" },
+        { "include": "#sort-keywords" }
+    ],
+    "repository": {
+        "comment": {
+            "name": "comment.line.number-sign.for-the-l",
+            "match": "#.*$"
+        },
+
+        "directive": {
+            "name": "meta.directive.for-the-l",
+            "begin": "\\[",
+            "end": "\\]",
+            "beginCaptures": {
+                "0": { "name": "punctuation.definition.directive.begin.for-the-l" }
+            },
+            "endCaptures": {
+                "0": { "name": "punctuation.definition.directive.end.for-the-l" }
+            },
+            "patterns": [
+                {
+                    "name": "keyword.control.directive.for-the-l",
+                    "match": "\\b(read|synonym|dump|exit|quit)\\b"
+                },
+                {
+                    "comment": "Synonym slash-separated forms",
+                    "match": "(/[-\\w]+)+",
+                    "name": "string.unquoted.synonym.for-the-l"
+                },
+                {
+                    "comment": "File paths in read directives",
+                    "match": "[\\w./\\-]+\\.ftl(\\.tex)?",
+                    "name": "string.unquoted.path.for-the-l"
+                }
+            ]
+        },
+
+        "section-header": {
+            "patterns": [
+                {
+                    "comment": "Named section: 'Signature IntZero.' or 'Definition DefSub.'",
+                    "match": "\\b(Signature|Definition|Axiom|Theorem|Proposition|Lemma|Corollary)\\b(\\s+([A-Z]\\w*))?\\s*\\.",
+                    "captures": {
+                        "1": { "name": "keyword.control.section.for-the-l" },
+                        "3": { "name": "entity.name.function.theorem.for-the-l" }
+                    }
+                }
+            ]
+        },
+
+        "proof-block": {
+            "patterns": [
+                {
+                    "comment": "Proof start with optional method (case-insensitive)",
+                    "match": "\\b(Proof|proof)\\b(\\s+(by)\\s+(contradiction|induction|case\\s+analysis)(\\s+on\\s+\\w+)?)?\\s*\\.",
+                    "captures": {
+                        "1": { "name": "keyword.control.proof.for-the-l" },
+                        "3": { "name": "keyword.other.for-the-l" },
+                        "4": { "name": "keyword.other.proof-method.for-the-l" }
+                    }
+                },
+                {
+                    "comment": "Proof end keywords (case-insensitive)",
+                    "match": "\\b(Qed|qed|Trivial|Obvious)\\s*\\.",
+                    "captures": {
+                        "1": { "name": "keyword.control.proof.end.for-the-l" }
+                    }
+                },
+                {
+                    "comment": "End. / end. (closing Case or nested proof)",
+                    "match": "\\b(End|end)\\s*\\.",
+                    "captures": {
+                        "1": { "name": "keyword.control.proof.end.for-the-l" }
+                    }
+                },
+                {
+                    "comment": "Case block start",
+                    "match": "\\b(Case)\\b",
+                    "captures": {
+                        "1": { "name": "keyword.control.case.for-the-l" }
+                    }
+                }
+            ]
+        },
+
+        "let-binding": {
+            "comment": "Let ... stand for ... / Let ... denote ...",
+            "match": "\\b(Let)\\b(.+?)\\b(stand\\s+for|denote)\\b",
+            "captures": {
+                "1": { "name": "keyword.control.let.for-the-l" },
+                "3": { "name": "keyword.other.binding.for-the-l" }
+            }
+        },
+
+        "labeled-step": {
+            "comment": "Labeled proof steps: (1), (2), etc.",
+            "match": "^\\s*(\\()(\\d+)(\\))",
+            "captures": {
+                "1": { "name": "punctuation.definition.label.begin.for-the-l" },
+                "2": { "name": "constant.numeric.label.for-the-l" },
+                "3": { "name": "punctuation.definition.label.end.for-the-l" }
+            }
+        },
+
+        "proof-step-keywords": {
+            "patterns": [
+                {
+                    "comment": "Assumption keywords",
+                    "match": "\\b(Assume|Suppose|Presume)\\b",
+                    "name": "keyword.other.assumption.for-the-l"
+                },
+                {
+                    "comment": "Conclusion keywords",
+                    "match": "\\b(Then|Hence|Thus|Therefore|Consequently|Indeed)\\b",
+                    "name": "keyword.other.conclusion.for-the-l"
+                },
+                {
+                    "comment": "Assertion keywords",
+                    "match": "\\bWe\\s+(have|can\\s+show)\\b",
+                    "name": "keyword.other.assertion.for-the-l"
+                },
+                {
+                    "comment": "Sub-goal openers",
+                    "match": "\\bLet\\s+us\\s+(show|prove|demonstrate)\\b",
+                    "name": "keyword.other.subgoal.for-the-l"
+                },
+                {
+                    "comment": "Choice keywords",
+                    "match": "\\b(Take|Choose|Consider|Define)\\b",
+                    "name": "keyword.other.choice.for-the-l"
+                },
+                {
+                    "comment": "Contradiction",
+                    "match": "\\b(Contradiction)\\s*\\.",
+                    "captures": {
+                        "1": { "name": "keyword.control.contradiction.for-the-l" }
+                    }
+                },
+                {
+                    "comment": "Special phrases: the thesis, the contrary, Assume the contrary",
+                    "match": "\\b(the\\s+thesis|the\\s+contrary|Assume\\s+the\\s+contrary)\\b",
+                    "name": "keyword.other.special-phrase.for-the-l"
+                },
+                {
+                    "comment": "Let (assumption in bodies, not top-level binding or sub-goal)",
+                    "match": "\\b(Let)\\b(?!\\s+us\\s)(?!.*\\b(?:stand\\s+for|denote)\\b)",
+                    "captures": {
+                        "1": { "name": "keyword.other.let.for-the-l" }
+                    }
+                },
+                {
+                    "comment": "Quantifiers and logical connectives in natural language",
+                    "match": "\\b(every|each|all|any|some|no|there|exists|exist|forall|iff|if and only if|such that|belongs to|is an element of)\\b",
+                    "name": "keyword.other.quantifier.for-the-l"
+                }
+            ]
+        },
+
+        "built-in-functions": {
+            "patterns": [
+                {
+                    "comment": "Built-in functions: Dom, Ran",
+                    "match": "\\b(Dom|Ran)\\s*\\(",
+                    "captures": {
+                        "1": { "name": "support.function.builtin.for-the-l" }
+                    }
+                }
+            ]
+        },
+
+        "sort-keywords": {
+            "comment": "Built-in sort/type keywords used in signatures",
+            "match": "\\b(notion|atom|object|objects)\\b",
+            "name": "support.type.for-the-l"
+        },
+
+        "logical-operators": {
+            "patterns": [
+                {
+                    "comment": "ForTheL logical operators: /\\, \\/, =>, <=>",
+                    "match": "/\\\\|\\\\/|<=>|=>",
+                    "name": "keyword.operator.logical.for-the-l"
+                },
+                {
+                    "comment": "Inequality and not-equal",
+                    "match": "!=",
+                    "name": "keyword.operator.comparison.for-the-l"
+                },
+                {
+                    "comment": "Induction ordering",
+                    "match": "-<-",
+                    "name": "keyword.operator.ordering.for-the-l"
+                },
+                {
+                    "comment": "Membership shorthand <<",
+                    "match": "<<",
+                    "name": "keyword.operator.membership.for-the-l"
+                },
+                {
+                    "comment": "LaTeX-style operators used in FTL mode",
+                    "match": "\\\\(in|notin|subseteq|subset|cup|cap|bigcup|bigcap|neq|prec|rightarrow|leftrightarrow|leq|geq)\\b",
+                    "name": "keyword.operator.set.for-the-l"
+                },
+                {
+                    "comment": "Equational reasoning chain operator",
+                    "match": "\\.=",
+                    "name": "keyword.operator.chain.for-the-l"
+                }
+            ]
+        },
+
+        "number": {
+            "name": "constant.numeric.for-the-l",
+            "match": "\\b[0-9]+\\b"
+        },
+
+        "string": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.for-the-l",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.for-the-l",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+
+        "parenthesized": {
+            "begin": "\\(",
+            "end": "\\)",
+            "beginCaptures": {
+                "0": { "name": "punctuation.paren.open.for-the-l" }
+            },
+            "endCaptures": {
+                "0": { "name": "punctuation.paren.close.for-the-l" }
+            },
+            "patterns": [
+                { "include": "#comment" },
+                { "include": "#logical-operators" },
+                { "include": "#number" },
+                { "include": "#proof-step-keywords" },
+                { "include": "#parenthesized" },
+                { "include": "#built-in-functions" },
+                {
+                    "comment": "'by' keyword in justification references (by AxiomName, 1, 2)",
+                    "match": "\\b(by)\\b",
+                    "name": "keyword.other.justification.for-the-l"
+                },
+                {
+                    "comment": "mod keyword in modular arithmetic: a = b (mod q)",
+                    "match": "\\b(mod)\\b",
+                    "name": "keyword.other.mod.for-the-l"
+                }
+            ]
+        },
+
+        "braces": {
+            "comment": "Set builder notation: {x in M | P(x)}",
+            "begin": "\\{",
+            "end": "\\}",
+            "beginCaptures": {
+                "0": { "name": "punctuation.brace.open.for-the-l" }
+            },
+            "endCaptures": {
+                "0": { "name": "punctuation.brace.close.for-the-l" }
+            },
+            "patterns": [
+                { "include": "#comment" },
+                { "include": "#logical-operators" },
+                { "include": "#number" },
+                { "include": "#proof-step-keywords" },
+                { "include": "#braces" },
+                { "include": "#built-in-functions" },
+                {
+                    "comment": "Set builder separator",
+                    "match": "\\|",
+                    "name": "keyword.operator.set-builder.for-the-l"
+                },
+                {
+                    "comment": "'in' keyword in set comprehension: {x in M | ...}",
+                    "match": "\\b(in)\\b",
+                    "name": "keyword.other.in.for-the-l"
+                }
+            ]
+        }
+    }
+}
