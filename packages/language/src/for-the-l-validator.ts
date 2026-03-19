@@ -18,6 +18,15 @@ import {
 } from './generated/ast.js';
 import type { ForTheLServices } from './for-the-l-module.js';
 
+/** Diagnostic codes used by the CodeActionProvider to identify fixable issues. */
+export const IssueCodes = {
+    MissingSynonym: 'missing-synonym',
+    UndefinedReference: 'undefined-reference',
+    ReservedWord: 'reserved-word',
+    MissingProof: 'missing-proof',
+    BadSynonymFormat: 'bad-synonym-format',
+} as const;
+
 /**
  * Register custom validation checks.
  * These produce "Did you mean X?" diagnostics for common Naproche pitfalls.
@@ -68,6 +77,14 @@ function sentenceText(sentence: SectionSentence): string {
     return sentence.body.map(t => String(t.value)).join(' ');
 }
 
+/**
+ * Find the token in a sentence body whose value matches the target word.
+ * Returns the token node for precise diagnostic highlighting.
+ */
+function findTokenByValue(sentence: SectionSentence, target: string): AstNode | undefined {
+    return sentence.body.find(t => String(t.value) === target);
+}
+
 /** Get all declared section names across the file. */
 function collectDeclaredNames(model: Model): Set<string> {
     const names = new Set<string>();
@@ -89,7 +106,6 @@ function collectSynonyms(model: Model): Set<string> {
         if (isDirective(el)) {
             const tokens = el.content.map(t => String(t.value));
             if (tokens[0] === 'synonym' && tokens.length >= 2) {
-                // Parse "synonym word/-s" or "synonym word/words"
                 const parts = tokens.slice(1).join('').split('/');
                 synonymRoots.add(parts[0]!);
             }
@@ -97,7 +113,6 @@ function collectSynonyms(model: Model): Set<string> {
     }
     return synonymRoots;
 }
-
 
 /**
  * Implementation of custom validations for ForTheL.
@@ -114,19 +129,22 @@ export class ForTheLValidator {
 
     /**
      * Warn when a Signature redeclares a Naproche built-in word.
-     *
-     * WRONG:  Signature. A set is a notion.
-     * RIGHT:  (don't — "set" is built-in)
+     * Highlights the reserved word itself, not the article.
      */
     checkSignatureReservedWords(node: SignatureBlock, accept: ValidationAcceptor): void {
         for (const sentence of node.sentences) {
             const text = sentenceText(sentence);
             const match = /^(?:A|An)\s+(\w+)\s+is\s+a\s+/i.exec(text);
             if (match?.[1] && RESERVED_NOTIONS.has(match[1].toLowerCase())) {
+                const targetToken = findTokenByValue(sentence, match[1]);
                 accept('warning',
                     `"${match[1]}" is a Naproche built-in and should not be redeclared. ` +
                     `Built-in words: set, class, element, object, function, map, notion.`,
-                    { node: sentence, property: 'body' }
+                    {
+                        node: targetToken ?? sentence,
+                        code: IssueCodes.ReservedWord,
+                        data: { word: match[1] },
+                    }
                 );
             }
         }
@@ -134,14 +152,13 @@ export class ForTheLValidator {
 
     /**
      * Hint when a Theorem/Lemma/Proposition/Corollary has no Proof block.
-     * Naproche will try to auto-prove it, which often times out.
      */
     checkTheoremHasProof(node: TheoremBlock, accept: ValidationAcceptor): void {
         if (!node.proof) {
             accept('hint',
                 `${node.kind} has no proof block. Naproche will attempt auto-proving, ` +
                 `which may time out. Consider adding "Proof. ... Qed."`,
-                { node }
+                { node, code: IssueCodes.MissingProof }
             );
         }
     }
@@ -153,14 +170,13 @@ export class ForTheLValidator {
         const tokens = node.content.map(t => String(t.value));
         if (tokens.length === 0) return;
 
-        // Check synonym directive format
         if (tokens[0] === 'synonym') {
             const rest = tokens.slice(1).join('');
             if (!rest.includes('/')) {
                 accept('error',
                     `Synonym directive must include a slash separator. ` +
                     `Did you mean: [synonym ${rest}/-s] ?`,
-                    { node }
+                    { node, code: IssueCodes.BadSynonymFormat }
                 );
             }
         }
@@ -168,9 +184,7 @@ export class ForTheLValidator {
 
     /**
      * Warn when a notion is declared but no corresponding synonym exists.
-     *
-     * If you write `Signature. A morphism is a notion.` but forget
-     * `[synonym morphism/-s]`, Naproche won't recognize "morphisms".
+     * Highlights the notion word itself, not the article.
      */
     private checkMissingSynonyms(model: Model, accept: ValidationAcceptor): void {
         const synonymRoots = collectSynonyms(model);
@@ -183,7 +197,6 @@ export class ForTheLValidator {
                 if (!match?.[1]) continue;
                 const word = match[1];
 
-                // Skip built-in words (they have built-in plurals)
                 if (RESERVED_NOTIONS.has(word.toLowerCase())) continue;
 
                 if (!synonymRoots.has(word)) {
@@ -191,10 +204,15 @@ export class ForTheLValidator {
                     const suggestion = irregular
                         ? `[synonym ${word}/${irregular}]`
                         : `[synonym ${word}/-s]`;
+                    const targetToken = findTokenByValue(sentence, word);
                     accept('warning',
                         `No [synonym] declared for "${word}". Naproche won't recognize its plural form. ` +
                         `Did you mean to add: ${suggestion}`,
-                        { node: sentence, property: 'body' }
+                        {
+                            node: targetToken ?? sentence,
+                            code: IssueCodes.MissingSynonym,
+                            data: { word, suggestion },
+                        }
                     );
                 }
             }
@@ -203,9 +221,7 @@ export class ForTheLValidator {
 
     /**
      * Warn when (by Name) references a name that doesn't exist.
-     *
-     * WRONG:  ... (by AddComm) when no "Axiom AddComm." exists
-     * RIGHT:  Axiom AddComm. ... then ... (by AddComm)
+     * Highlights the referenced name token.
      */
     private checkUndefinedReferences(model: Model, accept: ValidationAcceptor): void {
         const declaredNames = collectDeclaredNames(model);
@@ -214,36 +230,41 @@ export class ForTheLValidator {
             for (let i = 0; i < tokens.length; i++) {
                 const token = tokens[i]!;
                 if (String(token.value) === 'by' && i > 0 && String(tokens[i - 1]!.value) === '(') {
-                    // Collect the referenced names: (by Name1, Name2, ...)
                     const refs: Array<{ name: string; token: AstNode }> = [];
                     let j = i + 1;
                     let currentName: string[] = [];
+                    let firstToken: AstNode | undefined;
                     while (j < tokens.length) {
                         const v = String(tokens[j]!.value);
                         if (v === ')') break;
                         if (v === ',') {
                             if (currentName.length > 0) {
-                                refs.push({ name: currentName.join(' '), token: tokens[j - 1]! });
+                                refs.push({ name: currentName.join(' '), token: firstToken ?? tokens[j - 1]! });
                                 currentName = [];
+                                firstToken = undefined;
                             }
                         } else {
+                            if (currentName.length === 0) firstToken = tokens[j]!;
                             currentName.push(v);
                         }
                         j++;
                     }
                     if (currentName.length > 0 && j > i + 1) {
-                        refs.push({ name: currentName.join(' '), token: tokens[j - 1]! });
+                        refs.push({ name: currentName.join(' '), token: firstToken ?? tokens[j - 1]! });
                     }
 
                     for (const ref of refs) {
-                        // Skip numeric references like (by 1, 2)
                         if (/^\d+$/.test(ref.name)) continue;
 
                         if (!declaredNames.has(ref.name)) {
                             accept('warning',
                                 `Reference "${ref.name}" not found. ` +
                                 `No Axiom, Definition, Lemma, or Theorem named "${ref.name}" exists in this file.`,
-                                { node: ref.token }
+                                {
+                                    node: ref.token,
+                                    code: IssueCodes.UndefinedReference,
+                                    data: { name: ref.name },
+                                }
                             );
                         }
                     }
@@ -257,7 +278,6 @@ export class ForTheLValidator {
                     checkTokensForRefs(sentence.body);
                 }
             }
-            // Also check proof-like references in section sentences
             if (isAxiomBlock(el) || isDefinitionBlock(el) || isSignatureBlock(el) || isTheoremBlock(el)) {
                 const block = el as AxiomBlock | DefinitionBlock | SignatureBlock | TheoremBlock;
                 for (const sentence of block.sentences) {

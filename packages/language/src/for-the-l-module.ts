@@ -2,6 +2,7 @@ import { type Module, inject } from 'langium';
 import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModuleContext, type LangiumServices, type LangiumSharedServices, type PartialLangiumServices } from 'langium/lsp';
 import { ForTheLGeneratedModule, ForTheLGeneratedSharedModule } from './generated/module.js';
 import { ForTheLValidator, registerValidationChecks } from './for-the-l-validator.js';
+import { ForTheLCodeActionProvider } from './for-the-l-code-actions.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -26,6 +27,9 @@ export type ForTheLServices = LangiumServices & ForTheLAddedServices
 export const ForTheLModule: Module<ForTheLServices, PartialLangiumServices & ForTheLAddedServices> = {
     validation: {
         ForTheLValidator: () => new ForTheLValidator()
+    },
+    lsp: {
+        CodeActionProvider: () => new ForTheLCodeActionProvider()
     }
 };
 
