@@ -1,26 +1,20 @@
-#ifndef Py_COMPILE_H
-#define Py_COMPILE_H
-#ifdef __cplusplus
-extern "C" {
-#endif
+import { beforeAll, describe, expect, test } from "vitest";
+import { EmptyFileSystem, type LangiumDocument } from "langium";
+import { parseHelper } from "langium/test";
+import type { Model } from "for-the-l-language";
+import {
+    createForTheLServices,
+    isAxiomBlock,
+    isDefinitionBlock,
+    isDirective,
+    isLetBinding,
+    isModel,
+    isSignatureBlock,
+    isTheoremBlock,
+} from "for-the-l-language";
 
-/* These definitions must match corresponding definitions in graminit.h. */
-#define Py_single_input 256
-#define Py_file_input 257
-#define Py_eval_input 258
-#define Py_func_type_input 345
-
-#ifndef Py_LIMITED_API
-#  define Py_CPYTHON_COMPILE_H
-#  include "cpython/compile.h"
-#  undef Py_CPYTHON_COMPILE_H
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-#endif /* !Py_COMPILE_H */
-t parse:    ReturnType<typeof parseHelper<Model>>;
+let services: ReturnType<typeof createForTheLServices>;
+let parse: ReturnType<typeof parseHelper<Model>>;
 
 beforeAll(async () => {
     services = createForTheLServices(EmptyFileSystem);
