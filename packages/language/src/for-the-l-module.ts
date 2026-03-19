@@ -3,6 +3,7 @@ import { createDefaultModule, createDefaultSharedModule, type DefaultSharedModul
 import { ForTheLGeneratedModule, ForTheLGeneratedSharedModule } from './generated/module.js';
 import { ForTheLValidator, registerValidationChecks } from './for-the-l-validator.js';
 import { ForTheLCodeActionProvider } from './for-the-l-code-actions.js';
+import { ForTheLSemanticTokenProvider } from './for-the-l-semantic-tokens.js';
 
 /**
  * Declaration of custom services - add your own service classes here.
@@ -29,7 +30,8 @@ export const ForTheLModule: Module<ForTheLServices, PartialLangiumServices & For
         ForTheLValidator: () => new ForTheLValidator()
     },
     lsp: {
-        CodeActionProvider: () => new ForTheLCodeActionProvider()
+        CodeActionProvider: () => new ForTheLCodeActionProvider(),
+        SemanticTokenProvider: (services) => new ForTheLSemanticTokenProvider(services)
     }
 };
 
