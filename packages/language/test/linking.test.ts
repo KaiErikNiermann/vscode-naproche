@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from "vitest";
-import { EmptyFileSystem, type LangiumDocument } from "langium";
+import { EmptyFileSystem } from "langium";
 import { parseHelper } from "langium/test";
 import type { Model } from "for-the-l-language";
 import { createForTheLServices } from "for-the-l-language";

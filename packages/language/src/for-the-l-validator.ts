@@ -98,23 +98,6 @@ function collectSynonyms(model: Model): Set<string> {
     return synonymRoots;
 }
 
-/** Collect all notion words declared via Signature blocks. */
-function collectNotions(model: Model): string[] {
-    const notions: string[] = [];
-    for (const el of model.elements) {
-        if (isSignatureBlock(el)) {
-            for (const sentence of el.sentences) {
-                const text = sentenceText(sentence);
-                // Pattern: "A/An WORD is a notion" or "A/An WORD is a mathematical object"
-                const match = /^(?:A|An)\s+(\w+)\s+is\s+a\s+(?:notion|mathematical\s+object)/i.exec(text);
-                if (match?.[1]) {
-                    notions.push(match[1]);
-                }
-            }
-        }
-    }
-    return notions;
-}
 
 /**
  * Implementation of custom validations for ForTheL.
@@ -191,7 +174,6 @@ export class ForTheLValidator {
      */
     private checkMissingSynonyms(model: Model, accept: ValidationAcceptor): void {
         const synonymRoots = collectSynonyms(model);
-        const notions = collectNotions(model);
 
         for (const el of model.elements) {
             if (!isSignatureBlock(el)) continue;
